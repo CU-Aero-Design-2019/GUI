@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QSerialPort>
+#include <QtSerialPort/QSerialPort>
 
 QT_BEGIN_NAMESPACE
 
@@ -25,7 +25,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private:
+private slots:
     void openSerialPort();
     void closeSerialPort();
     void about();
