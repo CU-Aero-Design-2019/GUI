@@ -1,16 +1,20 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "settingsdialog.h"
+
+#include <QLabel>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-	m_status(new Qlabel),
+    m_status(new QLabel),
 	m_console(new Console),
 	m_settings(new SettingsDialog),
-    m_serial(new QSerialPort(this))
 {
     ui->setupUi(this);
 	m_serial(new QSerialPort(this));
+
 	connect(m_serial, &QSerialPort::readyRead, this, &MainWindow::readData);
 }
 
