@@ -2,49 +2,100 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtSerialPort/QSerialPort>
-
-QT_BEGIN_NAMESPACE
-
-class QLabel;
+#include "serial.h"
+#include <QSerialPortInfo>
+#include <QtQml/QQmlEngine>
+#include <QtQuickWidgets>
+#include <QShortcut>
 
 namespace Ui {
 class MainWindow;
 }
 
-QT_END_NAMESPACE
-
-class Console;
-class SettingsDialog;
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    Serial* serial;
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
-    void openSerialPort();
-    void closeSerialPort();
-    void about();
-    void writeData(const QByteArray &data);
-    void readData();
+    QDateTime systemClock;
 
-    void handleError(QSerialPort::SerialPortError error);
+    QTimer* receive_timer;
+    QTimer* send_timer;
+    bool portOpen;
+
+    bool zeroAlt;
+    bool sendOrigin;
+    bool originSignal;
+    //bool receivingSignal; not sure what this will be yet
+    bool armSignal;
+    bool autonomousSignal;
+    bool dropGliderASignal;
+    bool dropGliderBSignal;
+    bool dropHabLSignal;
+    bool dropHabRSignal;
+    bool dropWaterSignal;
+
+public slots:
+    void updateUI();
+
+    void connectSP();
+    void disconnectSP();
+
+    void updateCOM_comboBox();
+
+    void sendCommand();
+    void updateCommandSignals();
+
+    void setZeroAltSignal();
+    void setSendOriginSignal();
+    void setOriginSignal();
+    //void receivingSignal(); not sure what this will be yet
+    void setArmSignal();
+    void setAutonomousSignal();
+    void setDropGliderASignal();
+    void setDropGliderBSignal();
+    void setDropHabLSignal();
+    void setDropHabRSignal();
+    void setDropWaterSignal();
+    void shortcutGlider();
+    void shortcutHabs();
+    void shortcutWater();
 
 private:
-    void initActionsConnections();
+    Ui::MainWindow *ui;
+    QStringList telemetry;
+    QStringList updateBuffer(QString);
+    void updateGraph();
+    void logDropTimes(QStringList);
+    void graphInit();
+    void createPlaneSprite();
+    int mStr2FtInt(QString);
+    QString buffer;
+    QByteArray commandSignals;
+    bool gliderADropped;
+    bool gliderBDropped;
+    bool habLDropped;
+    bool habRDropped;
+    bool waterDropped;
 
-private:
-    void showStatusMessage(const QString &message);
+    int lastSerialTime = 0;
 
-    Ui::MainWindow *m_ui = nullptr;
-    QLabel *m_status = nullptr;
-    Console *m_console = nullptr;
-    SettingsDialog *m_settings = nullptr;
-    QSerialPort *m_serial = nullptr;
+    QPixmap planePixMap;
+
+    QFile dropTimesFile;
+    QFile originPointFile;
+
+    QQuickWidget* mapView;
+
+    QPen pen0, pen2, pen3;
+
+    QShortcut* gliderShortcut;
+    QShortcut* habShortcut;
+    QShortcut* waterShortcut;
 };
 
 #endif // MAINWINDOW_H
